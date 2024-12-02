@@ -3,6 +3,9 @@ import RPi.GPIO as GPIO
 
 app = Flask(__name__)
 
+GPIO.setmode(GPIO.BOARD)
+GPIO.setwarnings(False)  # Disable GPIO warnings
+
 # Set up GPIO mode and pins
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(11, GPIO.OUT)  # Example pin for forward
@@ -54,6 +57,6 @@ def action(action):
 
 if __name__ == '__main__':
     try:
-        app.run(host='0.0.0.0', port=5000, debug=True)
+        app.run(host='0.0.0.0', port=5001, debug=True)
     except KeyboardInterrupt:
         GPIO.cleanup()
