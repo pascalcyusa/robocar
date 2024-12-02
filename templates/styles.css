@@ -1,0 +1,216 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.min-h-screen {
+    min-height: 100vh;
+}
+
+.bg-gray-900 {
+    background-color: #1a202c;
+}
+
+.flex {
+    display: flex;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.p-4 {
+    padding: 1rem;
+}
+
+.w-full {
+    width: 100%;
+}
+
+.max-w-3xl {
+    max-width: 48rem;
+}
+
+.bg-black {
+    background-color: #000;
+}
+
+.rounded-40px {
+    border-radius: 40px;
+}
+
+.p-8 {
+    padding: 2rem;
+}
+
+.relative {
+    position: relative;
+}
+
+.overflow-hidden {
+    overflow: hidden;
+}
+
+.bg-gradient-to-b {
+    background: linear-gradient(to bottom, rgba(31, 41, 55, 0.5), rgba(17, 24, 39, 0.5));
+}
+
+.from-gray-800\/50 {
+    background-color: rgba(31, 41, 55, 0.5);
+}
+
+.to-gray-900\/50 {
+    background-color: rgba(17, 24, 39, 0.5);
+}
+
+.rounded-32px {
+    border-radius: 32px;
+}
+
+.p-6 {
+    padding: 1.5rem;
+}
+
+.text-4xl {
+    font-size: 2.25rem;
+}
+
+.md\:text-6xl {
+    font-size: 3.75rem;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.text-blue-500 {
+    color: #3b82f6;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mb-8 {
+    margin-bottom: 2rem;
+}
+
+.text-gray-400 {
+    color: #9ca3af;
+}
+
+.text-sm {
+    font-size: 0.875rem;
+}
+
+.relative {
+    position: relative;
+}
+
+.flex {
+    display: flex;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.mb-12 {
+    margin-bottom: 3rem;
+}
+
+.z-10 {
+    z-index: 10;
+}
+
+.grid {
+    display: grid;
+}
+
+.grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.gap-4 {
+    gap: 1rem;
+}
+
+.max-w-md {
+    max-width: 28rem;
+}
+
+.mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.col-start-2 {
+    grid-column-start: 2;
+}
+
+.col-start-3 {
+    grid-column-start: 3;
+}
+
+.w-full {
+    width: 100%;
+}
+
+.p-4 {
+    padding: 1rem;
+}
+
+.rounded-xl {
+    border-radius: 0.75rem;
+}
+
+.bg-gray-800 {
+    background-color: #2d3748;
+}
+
+.hover\:bg-gray-700:hover {
+    background-color: #4a5568;
+}
+
+.transition-colors {
+    transition: background-color 0.3s ease;
+}
+
+.bg-blue-500 {
+    background-color: #3b82f6;
+}
+
+.hover\:bg-blue-600:hover {
+    background-color: #2563eb;
+}
+
+.bg-red-500 {
+    background-color: #ef4444;
+}
+
+.hover\:bg-red-600:hover {
+    background-color: #dc2626;
+}
+
+.bg-yellow-500 {
+    background-color: #eab308;
+}
+
+.hover\:bg-yellow-600:hover {
+    background-color: #ca8a04;
+}
+
+.mt-8 {
+    margin-top: 2rem;
+}
+
+.text-gray-500 {
+    color: #6b7280;
+}
