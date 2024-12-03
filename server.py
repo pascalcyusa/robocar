@@ -14,6 +14,7 @@ IN4 = 23
 
 # GPIO setup
 GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)  # Disable GPIO warnings
 GPIO.setup(IN1, GPIO.OUT)
 GPIO.setup(IN2, GPIO.OUT)
 GPIO.setup(IN3, GPIO.OUT)

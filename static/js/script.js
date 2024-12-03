@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 moveRobot('backward');
                 break;
             case 's':
+            case 'S':
                 moveRobot('stop');
                 break;
         }
