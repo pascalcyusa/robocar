@@ -6,11 +6,11 @@ app = Flask(__name__)
 
 # GPIO pin setup
 # Motor A (left motor)
-IN1 = 17
-IN2 = 27
+IN1 = 27
+IN2 = 29
 # Motor B (right motor)
-IN3 = 22
-IN4 = 23
+IN3 = 20
+IN4 = 16
 
 # GPIO setup
 GPIO.setmode(GPIO.BCM)
