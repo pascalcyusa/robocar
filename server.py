@@ -1,62 +1,80 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 import RPi.GPIO as GPIO
+import logging
 
 app = Flask(__name__)
 
-GPIO.setmode(GPIO.BOARD)
-GPIO.setwarnings(False)  # Disable GPIO warnings
+# GPIO pin setup
+# Motor A (left motor)
+IN1 = 17
+IN2 = 27
+# Motor B (right motor)
+IN3 = 22
+IN4 = 23
 
-# Set up GPIO mode and pins
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(11, GPIO.OUT)  # Example pin for forward
-GPIO.setup(13, GPIO.OUT)  # Example pin for backward
-GPIO.setup(15, GPIO.OUT)  # Example pin for left
-GPIO.setup(16, GPIO.OUT)  # Example pin for right
-GPIO.setup(18, GPIO.OUT)  # Example pin for stop
-GPIO.setup(22, GPIO.OUT)  # Example pin for boost
+# GPIO setup
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(IN1, GPIO.OUT)
+GPIO.setup(IN2, GPIO.OUT)
+GPIO.setup(IN3, GPIO.OUT)
+GPIO.setup(IN4, GPIO.OUT)
 
-# Function to control the robot's movement
+# Motor control functions
+def move_forward():
+    GPIO.output(IN1, GPIO.HIGH)
+    GPIO.output(IN2, GPIO.LOW)
+    GPIO.output(IN3, GPIO.HIGH)
+    GPIO.output(IN4, GPIO.LOW)
 
+def move_backward():
+    GPIO.output(IN1, GPIO.LOW)
+    GPIO.output(IN2, GPIO.HIGH)
+    GPIO.output(IN3, GPIO.LOW)
+    GPIO.output(IN4, GPIO.HIGH)
+
+def stop():
+    GPIO.output(IN1, GPIO.LOW)
+    GPIO.output(IN2, GPIO.LOW)
+    GPIO.output(IN3, GPIO.LOW)
+    GPIO.output(IN4, GPIO.LOW)
 
 def control_robot(action):
     if action == 'forward':
-        GPIO.output(11, GPIO.HIGH)
-        GPIO.output(13, GPIO.LOW)
+        move_forward()
     elif action == 'backward':
-        GPIO.output(11, GPIO.LOW)
-        GPIO.output(13, GPIO.HIGH)
-    elif action == 'left':
-        GPIO.output(15, GPIO.HIGH)
-        GPIO.output(16, GPIO.LOW)
-    elif action == 'right':
-        GPIO.output(15, GPIO.LOW)
-        GPIO.output(16, GPIO.HIGH)
+        move_backward()
     elif action == 'stop':
-        GPIO.output(18, GPIO.HIGH)
-    elif action == 'boost':
-        GPIO.output(22, GPIO.HIGH)
+        stop()
     else:
-        GPIO.output(11, GPIO.LOW)
-        GPIO.output(13, GPIO.LOW)
-        GPIO.output(15, GPIO.LOW)
-        GPIO.output(16, GPIO.LOW)
-        GPIO.output(18, GPIO.LOW)
-        GPIO.output(22, GPIO.LOW)
-
+        logging.error(f"Invalid action: {action}")
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-
 @app.route('/<action>')
 def action(action):
     control_robot(action)
-    return f'Robot is moving {action}'
+    return jsonify({"status": "success", "action": action})
 
+@app.route('/shutdown', methods=['POST'])
+def shutdown():
+    try:
+        stop()
+        GPIO.cleanup()
+        return jsonify({"status": "success", "message": "GPIO cleaned up"}), 200
+    except Exception as e:
+        logging.error(f"Error during shutdown: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == '__main__':
     try:
+        logging.basicConfig(level=logging.INFO)
+        logging.info("Starting Flask app")
         app.run(host='0.0.0.0', port=5001, debug=True)
     except KeyboardInterrupt:
+        logging.info("Keyboard interrupt received, cleaning up GPIO")
+        GPIO.cleanup()
+    except Exception as e:
+        logging.error(f"Unexpected error: {e}")
         GPIO.cleanup()
