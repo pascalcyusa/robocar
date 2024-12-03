@@ -1,57 +1,79 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, request, render_template
 import RPi.GPIO as GPIO
 
 app = Flask(__name__)
 
-GPIO.setmode(GPIO.BOARD)   # use the BOARD pin-numbering system
-GPIO.setup(19, GPIO.OUT)   # like digitalio.DigitalInOut(board.D16)
-GPIO.setup(26, GPIO.OUT)   # like digitalio.DigitalInOut(board.D16)
-                            # and digitalio.Direction.OUTPUT
+# GPIO Pin Setup
+MOTOR_PIN1 = 19  # Motor control pin 1
+MOTOR_PIN2 = 26  # Motor control pin 2
+PWM_PIN = 21     # PWM pin for speed control
+
+GPIO.setmode(GPIO.BOARD)  # Use the BOARD pin numbering system
+GPIO.setwarnings(False)  # Suppress GPIO warnings
+GPIO.setup(MOTOR_PIN1, GPIO.OUT)
+GPIO.setup(MOTOR_PIN2, GPIO.OUT)
+GPIO.setup(PWM_PIN, GPIO.OUT)
+
+# Set up PWM for speed control
+pwm = GPIO.PWM(PWM_PIN, 500)  # Frequency = 500Hz
+pwm.start(0)  # Start with 0% duty cycle (motor stopped)
+
+# Variable to track speed
+motor_speed = 25  # Initial speed (25% duty cycle)
 
 
-# Motor control functions
-def move_forward():
-    GPIO.output(19, GPIO.HIGH)
-    GPIO.output(26, GPIO.LOW)
-
-def move_backward():
-    GPIO.output(19, GPIO.LOW)
-    GPIO.output(26, GPIO.HIGH)
-
-def stop():
-    GPIO.output(19, GPIO.LOW)
-    GPIO.output(26, GPIO.LOW)
-
-def control_robot(action):
-    if action == 'forward':
-        move_forward()
-    elif action == 'backward':
-        move_backward()
-    elif action == 'stop':
-        stop()
-
-@app.route('/')
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
-@app.route('/<action>')
-def action(action):
-    control_robot(action)
-    return jsonify({"status": "success", "action": action})
 
-@app.route('/shutdown', methods=['POST'])
-def shutdown():
+@app.route("/control")
+def control():
+    global motor_speed
+
+    command = request.args.get("command")
+    if command == "forward":
+        print("Motor rotating forward.")
+        GPIO.output(MOTOR_PIN1, GPIO.HIGH)
+        GPIO.output(MOTOR_PIN2, GPIO.LOW)
+        pwm.ChangeDutyCycle(motor_speed)  # Set speed
+
+    elif command == "backward":
+        print("Motor rotating backward.")
+        GPIO.output(MOTOR_PIN1, GPIO.LOW)
+        GPIO.output(MOTOR_PIN2, GPIO.HIGH)
+        pwm.ChangeDutyCycle(motor_speed)  # Set speed
+
+    elif command == "stop":
+        print("Motor stopped.")
+        GPIO.output(MOTOR_PIN1, GPIO.LOW)
+        GPIO.output(MOTOR_PIN2, GPIO.LOW)
+        pwm.ChangeDutyCycle(0)  # Stop PWM signal
+
+    elif command == "increase-speed":
+        motor_speed += 10  # Increase speed by 10%
+        if motor_speed > 100:
+            motor_speed = 100  # Cap speed at 100%
+        print(f"Increasing motor speed to {motor_speed}%.")
+        pwm.ChangeDutyCycle(motor_speed)
+
+    else:
+        print("Unknown command.")
+
+    return "Command received: " + command, 200
+
+
+# Cleanup GPIO on exit
+@app.teardown_appcontext
+def cleanup(exception=None):
+    pwm.stop()
+    GPIO.cleanup()
+
+
+if __name__ == "__main__":
     try:
-        stop()
-        GPIO.cleanup()
-        return jsonify({"status": "success", "message": "GPIO cleaned up"}), 200
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-if __name__ == '__main__':
-    try:
-        app.run(host='0.0.0.0', port=5001, debug=True)
+        app.run(host="0.0.0.0", port=5001, debug=True)
     except KeyboardInterrupt:
-        GPIO.cleanup()
-    except Exception:
+        print("Exiting program.")
+        pwm.stop()
         GPIO.cleanup()

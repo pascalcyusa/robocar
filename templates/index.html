@@ -4,66 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robo Car Dashboard</title>
-    <link rel="stylesheet" href="static/css/styles.css">
+    <title>Motor Control</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 
 <body>
-    <div class="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-        <div class="w-full max-w-3xl bg-black rounded-40px p-8 relative overflow-hidden">
-            <div class="bg-gradient-to-b from-gray-800/50 to-gray-900/50 rounded-32px p-6">
-                <!-- Robo Car Banner -->
-                <div class="text-4xl md:text-6xl font-bold text-blue-500 text-center mb-8">
-                    Robo Car
-                </div>
-                <!-- Time Display -->
-                <div class="text-gray-400 text-sm mb-8 text-center" id="time-display">
-                    <!-- Time will be inserted here by JavaScript -->
-                </div>
-
-                <!-- Controls -->
-                <div class="grid grid-cols-3 gap-4 max-w-md mx-auto">
-                    <!-- Top row -->
-                    <div class="col-start-2">
-                        <button id="forward"
-                            class="w-full p-4 rounded-xl bg-gray-800 hover:bg-gray-700 transition-colors">
-                            <svg class="w-6 h-6 mx-auto text-white" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7">
-                                </path>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!-- Middle row -->
-                    <button id="stop" class="p-4 rounded-xl bg-red-500 hover:bg-red-600 transition-colors">
-                        <svg class="w-6 h-6 mx-auto text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 6h12M6 12h12M6 18h12"></path>
-                        </svg>
-                    </button>
-
-                    <!-- Bottom row -->
-                    <div class="col-start-2">
-                        <button id="backward"
-                            class="w-full p-4 rounded-xl bg-gray-800 hover:bg-gray-700 transition-colors">
-                            <svg class="w-6 h-6 mx-auto text-white" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Key Controls Info -->
-                <div class="mt-8 text-center text-sm text-gray-500">
-                    Use arrow keys to control direction | Press 'S' to stop
-                </div>
-            </div>
-        </div>
+    <div class="container">
+        <h1>Motor Control Interface</h1>
+        <button onclick="controlMotor('forward')">Forward</button>
+        <button onclick="controlMotor('backward')">Backward</button>
+        <button onclick="controlMotor('stop')">Stop</button>
+        <button onclick="controlMotor('increase-speed')">Increase Speed</button>
     </div>
-    <script src="static/js/script.js"></script>
+    <script src="/static/js/script.js"></script>
 </body>
 
 </html>

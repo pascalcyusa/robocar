@@ -1,56 +1,20 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const timeDisplay = document.getElementById('time-display');
-    const forwardButton = document.getElementById('forward');
-    const backwardButton = document.getElementById('backward');
-    const stopButton = document.getElementById('stop');
+function controlMotor(action) {
+    // Define the URL for the action
+    var url = "http://10.243.86.94:5001/control?command=" + action;
 
-    const updateTime = () => {
-        timeDisplay.textContent = new Date().toLocaleTimeString();
-    };
+    // Create a new XMLHttpRequest object
+    var xhr = new XMLHttpRequest();
 
-    setInterval(updateTime, 1000);
-    updateTime(); // Initial call to set the time immediately
-
-    const handleKeyDown = (e) => {
-        switch (e.key.toLowerCase()) {
-            case 'arrowup':
-                moveRobot('forward');
-                break;
-            case 'arrowdown':
-                moveRobot('backward');
-                break;
-            case 's':
-            case 'S':
-                moveRobot('stop');
-                break;
+    // Set up a callback function to handle the response
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            console.log("Command sent: " + action);
+        } else if (xhr.readyState == 4) {
+            console.error("Error sending command: " + xhr.status);
         }
     };
 
-    const handleKeyUp = (e) => {
-        if (['arrowup', 'arrowdown'].includes(e.key.toLowerCase())) {
-            moveRobot('stop');
-        }
-    };
-
-    const moveRobot = async (action) => {
-        try {
-            const response = await fetch(`/${action}`, {
-                method: 'GET',
-            });
-            if (response.ok) {
-                console.log(`Robot is moving ${action}`);
-            } else {
-                console.error('Failed to move robot');
-            }
-        } catch (error) {
-            console.error('Error sending GET request:', error);
-        }
-    };
-
-    forwardButton.addEventListener('click', () => moveRobot('forward'));
-    backwardButton.addEventListener('click', () => moveRobot('backward'));
-    stopButton.addEventListener('click', () => moveRobot('stop'));
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-});
+    // Send the GET request
+    xhr.open("GET", url, true);
+    xhr.send();
+}
