@@ -1,79 +1,87 @@
-from flask import Flask, request, render_template
+from flask import Flask, render_template
 import RPi.GPIO as GPIO
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static", template_folder="templates")
 
-# GPIO Pin Setup
-MOTOR_PIN1 = 19  # Motor control pin 1
-MOTOR_PIN2 = 26  # Motor control pin 2
-PWM_PIN = 21     # PWM pin for speed control
+# Setup GPIO pins
+GPIO.setmode(GPIO.BOARD)
+GPIO.setwarnings(False)
+GPIO.setup(12, GPIO.OUT)  # Left Motor Forward
+GPIO.setup(32, GPIO.OUT)  # Left Motor Backward
+GPIO.setup(33, GPIO.OUT)  # Right Motor Forward
+GPIO.setup(35, GPIO.OUT)  # Right Motor Backward
 
-GPIO.setmode(GPIO.BOARD)  # Use the BOARD pin numbering system
-GPIO.setwarnings(False)  # Suppress GPIO warnings
-GPIO.setup(MOTOR_PIN1, GPIO.OUT)
-GPIO.setup(MOTOR_PIN2, GPIO.OUT)
-GPIO.setup(PWM_PIN, GPIO.OUT)
+# Set up PWM for motor speed control
+left_pwm_fwd = GPIO.PWM(12, 500)
+left_pwm_bwd = GPIO.PWM(32, 500)
+right_pwm_fwd = GPIO.PWM(33, 500)
+right_pwm_bwd = GPIO.PWM(35, 500)
 
-# Set up PWM for speed control
-pwm = GPIO.PWM(PWM_PIN, 500)  # Frequency = 500Hz
-pwm.start(0)  # Start with 0% duty cycle (motor stopped)
+left_pwm_fwd.start(0)
+left_pwm_bwd.start(0)
+right_pwm_fwd.start(0)
+right_pwm_bwd.start(0)
 
-# Variable to track speed
-motor_speed = 25  # Initial speed (25% duty cycle)
+# Function to control left motor
+def control_left_motor(speed, direction):
+    if direction == 1:  # Forward
+        left_pwm_bwd.ChangeDutyCycle(0)
+        left_pwm_fwd.ChangeDutyCycle(speed)
+    elif direction == -1:  # Backward
+        left_pwm_fwd.ChangeDutyCycle(0)
+        left_pwm_bwd.ChangeDutyCycle(speed)
 
+# Function to control right motor
+def control_right_motor(speed, direction):
+    if direction == 1:  # Forward
+        right_pwm_bwd.ChangeDutyCycle(0)
+        right_pwm_fwd.ChangeDutyCycle(speed)
+    elif direction == -1:  # Backward
+        right_pwm_fwd.ChangeDutyCycle(0)
+        right_pwm_bwd.ChangeDutyCycle(speed)
 
-@app.route("/")
+@app.route('/')
 def index():
-    return render_template("index.html")
+    return render_template('index.html')
 
+@app.route('/forward')
+def forward():
+    left_speed = 50
+    right_speed = 50
+    control_left_motor(left_speed, 1)
+    control_right_motor(right_speed, 1)
 
-@app.route("/control")
-def control():
-    global motor_speed
+@app.route('/backward')
+def backward():
+    left_speed = 50
+    right_speed = 50
+    control_left_motor(left_speed, -1)
+    control_right_motor(right_speed, -1)
 
-    command = request.args.get("command")
-    if command == "forward":
-        print("Motor rotating forward.")
-        GPIO.output(MOTOR_PIN1, GPIO.HIGH)
-        GPIO.output(MOTOR_PIN2, GPIO.LOW)
-        pwm.ChangeDutyCycle(motor_speed)  # Set speed
+@app.route('/stop')
+def stop():
+    control_left_motor(0, 1)
+    control_right_motor(0, 1)
+    return "Stopped!"
 
-    elif command == "backward":
-        print("Motor rotating backward.")
-        GPIO.output(MOTOR_PIN1, GPIO.LOW)
-        GPIO.output(MOTOR_PIN2, GPIO.HIGH)
-        pwm.ChangeDutyCycle(motor_speed)  # Set speed
+@app.route('/increase-speed')
+def increase_speed():
+    left_speed = 80  # Increase speed
+    right_speed = 80
+    control_left_motor(left_speed, 1)
+    control_right_motor(right_speed, 1)
 
-    elif command == "stop":
-        print("Motor stopped.")
-        GPIO.output(MOTOR_PIN1, GPIO.LOW)
-        GPIO.output(MOTOR_PIN2, GPIO.LOW)
-        pwm.ChangeDutyCycle(0)  # Stop PWM signal
-
-    elif command == "increase-speed":
-        motor_speed += 10  # Increase speed by 10%
-        if motor_speed > 100:
-            motor_speed = 100  # Cap speed at 100%
-        print(f"Increasing motor speed to {motor_speed}%.")
-        pwm.ChangeDutyCycle(motor_speed)
-
-    else:
-        print("Unknown command.")
-
-    return "Command received: " + command, 200
-
-
-# Cleanup GPIO on exit
-@app.teardown_appcontext
-def cleanup(exception=None):
-    pwm.stop()
+@app.route('/shutdown')
+def shutdown():
+    left_pwm_fwd.stop()
+    left_pwm_bwd.stop()
+    right_pwm_fwd.stop()
+    right_pwm_bwd.stop()
     GPIO.cleanup()
+    return "System shutdown!"
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     try:
-        app.run(host="0.0.0.0", port=5001, debug=True)
+        app.run(host='0.0.0.0', port=5001)
     except KeyboardInterrupt:
-        print("Exiting program.")
-        pwm.stop()
         GPIO.cleanup()
