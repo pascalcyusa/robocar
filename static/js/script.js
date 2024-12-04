@@ -32,10 +32,31 @@ function controlMotor(action) {
         })
         .then(data => {
             console.log('Server response:', data);
-            alert(data); // Display server response as an alert
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('An error occurred. Check the console for details.');
         });
 }
+
+// Add event listener for keydown events
+document.addEventListener('keydown', (event) => {
+    switch (event.key) {
+        case 'ArrowUp': // Forward
+            controlMotor('forward');
+            break;
+        case 'ArrowDown': // Backward
+            controlMotor('backward');
+            break;
+        case 's': // Stop
+        case 'S':
+            controlMotor('stop');
+            break;
+        case 'a': // Increase speed
+        case 'A':
+            controlMotor('increase-speed');
+            break;
+        default:
+            console.log(`Key pressed: ${event.key} (no action associated)`);
+            break;
+    }
+});

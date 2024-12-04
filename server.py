@@ -50,6 +50,7 @@ def forward():
     right_speed = 50
     control_left_motor(left_speed, 1)
     control_right_motor(right_speed, 1)
+    return "Going forward!"
 
 @app.route('/backward')
 def backward():
@@ -57,6 +58,7 @@ def backward():
     right_speed = 50
     control_left_motor(left_speed, -1)
     control_right_motor(right_speed, -1)
+    return "Going backward!"
 
 @app.route('/stop')
 def stop():
@@ -70,6 +72,7 @@ def increase_speed():
     right_speed = 80
     control_left_motor(left_speed, 1)
     control_right_motor(right_speed, 1)
+    return "Speed increased!"
 
 @app.route('/shutdown')
 def shutdown():
