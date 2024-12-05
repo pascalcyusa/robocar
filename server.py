@@ -6,10 +6,10 @@ app = Flask(__name__, static_folder="static", template_folder="templates")
 # Setup GPIO pins
 GPIO.setmode(GPIO.BOARD)
 GPIO.setwarnings(False)
-GPIO.setup(12, GPIO.OUT)  # Left Motor Forward
-GPIO.setup(32, GPIO.OUT)  # Left Motor Backward
-GPIO.setup(33, GPIO.OUT)  # Right Motor Forward
-GPIO.setup(35, GPIO.OUT)  # Right Motor Backward
+GPIO.setup(12, GPIO.OUT)  # Left Motor 
+GPIO.setup(32, GPIO.OUT)  # Left Motor 
+GPIO.setup(33, GPIO.OUT)  # Right Motor 
+GPIO.setup(35, GPIO.OUT)  # Right Motor 
 
 # Set up PWM for motor speed control
 left_pwm_fwd = GPIO.PWM(12, 500)
